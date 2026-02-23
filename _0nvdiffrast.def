@@ -1,0 +1,50 @@
+Bootstrap: docker
+From: ubuntu:24.04
+
+%files
+  #3.10 Python
+  #13.0.48 CUDA
+  ./cuda_13.0.2_580.95.05_linux.run /
+  
+%post
+  export DEBIAN_FRONTEND=noninteractive
+  
+  apt-get update && apt install -y software-properties-common && add-apt-repository ppa:deadsnakes/ppa && apt-get update && apt install -y python3.10 && update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
+  apt install -y python3-pip python3.10-dev
+  
+  apt-get update && apt-get upgrade -y && apt-get install -y git build-essential wget libxml2 libgl1-mesa-dev libegl1-mesa-dev ninja-build libgl1-mesa-dev libgles2-mesa-dev libosmesa6-dev
+  
+  rm -f /usr/lib/python3.10/EXTERNALLY-MANAGED
+  
+    chmod +x cuda_13.0.2_580.95.05_linux.run && ./cuda_13.0.2_580.95.05_linux.run --silent --toolkit --samples --toolkitpath=/usr/local/cuda-13.0 && echo 'export PATH=/usr/local/cuda-13.0/bin:$PATH' >> ~/.zshrc && echo 'export LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64:$LD_LIBRARY_PATH' >> ~/.zshrc && . ~/.zshrc && ldconfig && rm cuda_13.0.2_580.95.05_linux.run    
+  
+  export CUDA_HOME=/usr/local/cuda-13.0
+  export PATH=$CUDA_HOME/bin:$PATH
+  
+  pip3 install --no-cache-dir torch==2.10.0 torchvision==0.25.0 torchaudio==2.10.0 --index-url https://download.pytorch.org/whl/cu130
+  
+  pip3 install --no-cache-dir setuptools wheel ninja imageio glfw PyOpenGL PyOpenGL_accelerate
+  ln -s /usr/local/lib/python3.10/dist-packages/torch/lib/libc10_cuda.so /usr/local/lib/libc10_cuda.so
+  ln -s /usr/local/lib/python3.10/dist-packages/torch/lib/libc10.so /usr/local/lib/libc10.so
+  ldconfig
+  ldconfig /usr/local/lib/python3.10/dist-packages/torch/lib
+  
+  git clone https://github.com/NVlabs/nvdiffrast 
+  cd /nvdiffrast
+  
+  python3 -m pip install --ignore-installed setuptools wheel packaging --break-system-packages  
+  export PATH=$CUDA_HOME/bin:$PATH
+  export LD_LIBRARY_PATH=/usr/local/lib/python3.10/dist-packages/torch/lib:$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+  export TORCH_CUDA_ARCH_LIST="8.0;8.6;8.9;9.0;12.0"
+  FORCE_CUDA=1 pip install . --no-cache-dir --no-build-isolation
+  
+%environment
+  export PYTHONNOUSERSITE=1
+  export CUDA_HOME=/usr/local/cuda-13.0
+  export PATH=/usr/local/cuda-13.0/bin:$PATH
+  export LD_LIBRARY_PATH=/usr/local/lib/python3.10/dist-packages/torch/lib:$CUDA_HOME/lib64:$LD_LIBRARY_PATH
+  export TORCH_CUDA_ARCH_LIST="8.0;8.6;8.9;9.0;12.0"
+   
+%labels
+  Author Ignacio Páez Ubieta - CogRob group - Tampere University (Finland)
+  Version v0.0.1
