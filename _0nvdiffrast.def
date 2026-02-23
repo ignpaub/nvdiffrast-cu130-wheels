@@ -2,8 +2,6 @@ Bootstrap: docker
 From: ubuntu:24.04
 
 %files
-  #3.10 Python
-  #13.0.48 CUDA
   ./cuda_13.0.2_580.95.05_linux.run /
   
 %post
@@ -16,7 +14,7 @@ From: ubuntu:24.04
   
   rm -f /usr/lib/python3.10/EXTERNALLY-MANAGED
   
-    chmod +x cuda_13.0.2_580.95.05_linux.run && ./cuda_13.0.2_580.95.05_linux.run --silent --toolkit --samples --toolkitpath=/usr/local/cuda-13.0 && echo 'export PATH=/usr/local/cuda-13.0/bin:$PATH' >> ~/.zshrc && echo 'export LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64:$LD_LIBRARY_PATH' >> ~/.zshrc && . ~/.zshrc && ldconfig && rm cuda_13.0.2_580.95.05_linux.run    
+  chmod +x cuda_13.0.2_580.95.05_linux.run && ./cuda_13.0.2_580.95.05_linux.run --silent --toolkit --samples --toolkitpath=/usr/local/cuda-13.0 && echo 'export PATH=/usr/local/cuda-13.0/bin:$PATH' >> ~/.zshrc && echo 'export LD_LIBRARY_PATH=/usr/local/cuda-13.0/lib64:$LD_LIBRARY_PATH' >> ~/.zshrc && . ~/.zshrc && ldconfig && rm cuda_13.0.2_580.95.05_linux.run    
   
   export CUDA_HOME=/usr/local/cuda-13.0
   export PATH=$CUDA_HOME/bin:$PATH
