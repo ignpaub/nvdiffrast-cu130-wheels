@@ -3,7 +3,7 @@
 ![Teaser image](./docs/img/teaser.png)
 
 --------------------------------------------------------------------------------------------------
-Designed the apptainer file to produce custom wheel files for supporting CUDA 13.0 + Python 3.10 on RTX 5090.
+Designed the apptainer file to produce custom wheel files for supporting x86_64 CUDA 13.0 + Python 3.10 on RTX 5090.
 This repo was dependency to a larger one. Manual custom compilation required to save time during installation.
 --------------------------------------------------------------------------------------------------
 
@@ -21,6 +21,13 @@ pip install git+https://github.com/NVlabs/nvdiffrast.git --no-build-isolation
 
 
 --------------------------------------------------------------------------------------------------
+### Before starting
+Edit .def file and modify it as needed:
+  a) Python: 3.10
+  b) CUDA: 13.0 
+  c) torch+torchvision+torchaudio (with CUDA 13.0 support): 2.10.0+0.25.0+2.10.0
+  d) TORCH_CUDA_ARCH_LIST: 8.0/8.6/8.9/9.0/12.0
+
 ### Install using apptainer
 
 ```bash
@@ -31,6 +38,13 @@ Choose one of the following commands (no GPU or GPU support)
 1) apptainer shell -H /home/ignacio/ --pwd / -w --fakeroot _0nvdiffrast
 2) apptainer shell -H /home/ignacio/ --pwd / --nv _0nvdiffrast
 ```
+
+### Create the wheel file
+```bash
+python3 setup.py bdist_wheel
+```
+If success, wheel will be created at /nvdiffrast/dist/.
+It was renamed to nvdiffrast-0.4.0+cu130.sm120-cp310-linux_x86_64.whl to remember supported versions.
 --------------------------------------------------------------------------------------------------
 
 See &#x261E;&#x261E; [nvdiffrast documentation](https://nvlabs.github.io/nvdiffrast) &#x261C;&#x261C; for more information.
